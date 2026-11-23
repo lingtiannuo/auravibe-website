@@ -494,7 +494,8 @@ footer .cols a[href^="mailto:"]{white-space:nowrap;overflow-wrap:normal}
 footer a.social{display:inline-flex;align-items:center;gap:8px}
 footer a.social .lbl{white-space:nowrap}
 footer a.social .ico{width:20px;height:20px;flex:none;border-radius:6px}
-footer li.sub{color:var(--mute);font-size:13px;line-height:1.4}
-footer li.sub+li.sub{margin-top:-4px}
 .sh p a{color:var(--ink,inherit);text-decoration:underline;text-underline-offset:3px}
 .done p.follow{margin-top:18px}
+.done p.home{margin-top:18px;font-size:15px}
+.done p.home a{color:var(--soft);text-underline-offset:3px}
+.done .row .btn{min-width:210px}
