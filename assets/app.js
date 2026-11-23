@@ -362,6 +362,7 @@ function setLang(l) {
   lang = l === 'zh' ? 'zh' : 'en';
   root.dataset.lang = lang; root.lang = lang === 'zh' ? 'zh-CN' : 'en';
   $$('.lang button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.lang === lang)); });
+  $$('[data-alt-en]').forEach(function (el) { el.alt = lang === 'zh' ? el.dataset.altZh : el.dataset.altEn; });
   $$('[data-ph-en]').forEach(function (el) { el.placeholder = lang === 'zh' ? el.dataset.phZh : el.dataset.phEn; });
   $$('option[data-en]').forEach(function (op) { op.textContent = op.dataset[lang]; });
   var tt = root.dataset['title' + (lang === 'zh' ? 'Zh' : 'En')]; if (tt) document.title = tt;
