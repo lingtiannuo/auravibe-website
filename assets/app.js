@@ -8,7 +8,7 @@
    PHOTOS: image URLs that replace the grey photo placeholders, keyed by
    the slot's data-photo name (hero, strip1…strip5, ev-<slug>, …).
 ------------------------------------------------------------------- */
-var CONFIG = { endpoint: '' };
+var CONFIG = { endpoint: 'https://script.google.com/macros/s/AKfycbxQ9FhLkqB4kYz0qTMFi5ziyiEvzi5ZZcn9viqE6yLwvTxDpQ30ZH4Rx4QVROIxwMer/exec' };
 var PHOTOS = {};
 
 var root = document.documentElement;
