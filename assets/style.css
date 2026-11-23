@@ -499,3 +499,9 @@ footer a.social .ico{width:20px;height:20px;flex:none;border-radius:6px}
 .done p.home{margin-top:18px;font-size:15px}
 .done p.home a{color:var(--soft);text-underline-offset:3px}
 .done .row .btn{min-width:210px}
+/* line breaks: no lonely last word/character */
+.nw{white-space:nowrap}
+p,li,dd,blockquote,.lead,h3,h4{text-wrap:pretty}
+.sh p,.lead,.phero .lead{text-wrap:balance}
+@media(max-width:420px){:root[data-lang=zh] .hero h1{font-size:min(46px,calc((100vw - 84px)/6.2))}}
+@media(max-width:700px){.ftabs{display:flex}.ftabs li{flex:1 1 0;min-width:0}.ftabs li.on{flex:0 0 auto;padding-inline:12px;white-space:nowrap}}

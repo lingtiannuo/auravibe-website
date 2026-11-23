@@ -374,3 +374,32 @@ $$('.lang button').forEach(function (b) { b.addEventListener('click', function (
 var saved = store.get('av-lang');
 setLang(saved || ((navigator.language || '').toLowerCase().indexOf('zh') === 0 ? 'zh' : 'en'));
 })();
+
+/* ---------------- no lonely last character (CJK) ----------------
+   Glues the last few Chinese characters of a paragraph together so a
+   line never ends with a single character + punctuation on its own. */
+(function () {
+  try {
+    var CJK = /[㐀-鿿]/;
+    var TAIL = /[，。！？、；：”’）》」』…—,.!?;:)\]\s]*$/;
+    var skip = 'button,.btn,select,option,nav,.mnav,.lang,.chips,.chip,.ftabs,.tagph,.vol,.eyebrow,footer h4';
+    document.querySelectorAll('[data-t="zh"]').forEach(function (el) {
+      if (el.closest(skip)) return;
+      var n = el.lastChild;
+      while (n && n.nodeType === 3 && !n.nodeValue.trim()) n = n.previousSibling;
+      if (!n || n.nodeType !== 3) return;
+      var t = n.nodeValue.replace(/\s+$/, '');
+      if (t.length < 10) return;
+      var punct = (t.match(TAIL) || [''])[0].length;
+      var cut = t.length - punct - 3;
+      if (cut < 4) return;
+      var tail = t.slice(cut);
+      if (!CJK.test(tail) || /\s/.test(tail.trim())) return;
+      var span = document.createElement('span');
+      span.className = 'nw';
+      span.textContent = tail;
+      n.nodeValue = t.slice(0, cut);
+      n.parentNode.insertBefore(span, n.nextSibling);
+    });
+  } catch (e) { /* cosmetic only */ }
+})();
