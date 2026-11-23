@@ -505,3 +505,44 @@ p,li,dd,blockquote,.lead,h3,h4{text-wrap:pretty}
 .sh p,.lead,.phero .lead{text-wrap:balance}
 @media(max-width:420px){:root[data-lang=zh] .hero h1{font-size:min(46px,calc((100vw - 84px)/6.2))}}
 @media(max-width:700px){.ftabs{display:flex}.ftabs li{flex:1 1 0;min-width:0}.ftabs li.on{flex:0 0 auto;padding-inline:12px;white-space:nowrap}}
+
+/* ===== mobile pass, Nov 2026 ===== */
+/* event pages: closing call to action */
+.evcta{padding-bottom:clamp(72px,8.5vw,128px)}
+.evcta .band .row{gap:12px;flex-wrap:wrap}
+.evcta .eyebrow{margin-bottom:8px}
+
+/* floating apply bar (phones/tablets) */
+.mbar{display:none}
+@media(max-width:860px){
+  .mbar{display:block;position:fixed;left:0;right:0;bottom:0;z-index:25;background:rgba(10,10,13,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:10px max(4vw,18px) calc(10px + env(safe-area-inset-bottom,0px));transform:translateY(110%);transition:transform .28s ease;visibility:hidden}
+  .mbar.show{transform:none;visibility:visible}
+  .mbar .in{display:flex;align-items:center;justify-content:space-between;gap:14px;max-width:1320px;margin:0 auto}
+  .mbar p{font-size:15px;line-height:1.3}
+  .mbar small{display:block;color:var(--mute);font-size:12.5px;margin-top:2px}
+  .mbar .btn{min-height:46px;padding:0 22px;font-size:15px;flex:none}
+  .sticky-cta{padding-bottom:env(safe-area-inset-bottom,0px)}
+}
+@media(prefers-reduced-motion:reduce){.mbar{transition:none}}
+
+@media(max-width:760px){
+  /* home: swipeable event cards */
+  .evgrid.rail{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin-inline:calc(-1*max(4vw,18px));padding-inline:max(4vw,18px);scroll-padding-inline:max(4vw,18px);scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+  .evgrid.rail::-webkit-scrollbar{display:none}
+  .evgrid.rail>.ev{flex:0 0 84%;scroll-snap-align:start}
+}
+@media(max-width:560px){
+  .sec{padding-block:60px}
+  .formats div{min-height:0}
+  /* forms: full-width card, no phantom gaps */
+  .formcard{margin-inline:calc(-1*max(4vw,18px));border-radius:0;border-left:0;border-right:0}
+  .panel{padding:24px max(4vw,18px) 28px}
+  .actions{padding:14px max(4vw,18px)}
+  .two{gap:24px}
+  .two>.q{display:block}
+  .hint:empty{display:none}
+  .fields{gap:24px}
+  .evcta .band .row .btn{flex:1 1 auto}
+}
+.sched li{grid-template-columns:52px minmax(0,1fr)!important}
+@media(max-width:560px){.disp{line-height:.98}.sched li{grid-template-columns:44px minmax(0,1fr)!important}}

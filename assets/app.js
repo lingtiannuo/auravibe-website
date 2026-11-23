@@ -5,11 +5,35 @@
    SETTINGS
    endpoint: the Google Apps Script web-app URL that stores applications
    (text → Google Sheet, photos → Google Drive). Empty = preview mode.
+   ga: Google Analytics 4 measurement ID (looks like G-XXXXXXXXXX).
+   Empty = no analytics. Only page views and the events below are sent,
+   never anything typed into the forms.
    PHOTOS: image URLs that replace the grey photo placeholders, keyed by
    the slot's data-photo name (hero, strip1…strip5, ev-<slug>, …).
 ------------------------------------------------------------------- */
-var CONFIG = { endpoint: 'https://script.google.com/macros/s/AKfycbxQ9FhLkqB4kYz0qTMFi5ziyiEvzi5ZZcn9viqE6yLwvTxDpQ30ZH4Rx4QVROIxwMer/exec' };
+var CONFIG = { ga: '', endpoint: 'https://script.google.com/macros/s/AKfycbxQ9FhLkqB4kYz0qTMFi5ziyiEvzi5ZZcn9viqE6yLwvTxDpQ30ZH4Rx4QVROIxwMer/exec' };
 var PHOTOS = {};
+
+/* ---------------- analytics (GA4) ---------------- */
+function track(name, params) { try { if (window.gtag) window.gtag('event', name, params || {}); } catch (e) {} }
+if (CONFIG.ga) {
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function () { window.dataLayer.push(arguments); };
+  window.gtag('js', new Date());
+  window.gtag('config', CONFIG.ga);
+  var gs = document.createElement('script'); gs.async = true;
+  gs.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(CONFIG.ga);
+  document.head.appendChild(gs);
+}
+document.addEventListener('click', function (e) {
+  var a = e.target.closest && e.target.closest('a[href]'); if (!a) return;
+  var h = a.getAttribute('href') || '', where = a.closest('header,footer,.mbar,.sticky-cta,.hero,.cta,.evcta') ;
+  var spot = where ? (where.className.split(' ')[0] || where.tagName.toLowerCase()) : 'body';
+  if (h.indexOf('apply.html') === 0) track('apply_click', { link_location: spot, event_slug: (h.split('event=')[1] || '') });
+  else if (h.indexOf('xiaohongshu.com') > -1) track('social_click', { network: 'rednote', link_location: spot });
+  else if (h.indexOf('instagram.com') > -1) track('social_click', { network: 'instagram', link_location: spot });
+  else if (h.indexOf('mailto:') === 0) track('email_click', { link_location: spot });
+}, true);
 
 var root = document.documentElement;
 function $(s, el) { return (el || document).querySelector(s); }
@@ -245,7 +269,7 @@ if (form) (function () {
     backBtn.hidden = step === 0;
     tabs.forEach(function (t, i) { t.classList.toggle('on', i === step); t.classList.toggle('done', i < step); });
   }
-  function show(i) { panels.forEach(function (p, k) { p.hidden = k !== i; }); step = i; updateProgress(); form.scrollIntoView({ block: 'start' }); }
+  function show(i) { panels.forEach(function (p, k) { p.hidden = k !== i; }); step = i; updateProgress(); form.scrollIntoView({ block: 'start' }); track('apply_step', { step: i + 1 }); }
   nextBtn.addEventListener('click', function () {
     var bad = validateIn(panels[step]);
     if (bad) { focusQ(bad); return; }
@@ -315,7 +339,8 @@ if (form) (function () {
     $$('.q', form).forEach(function (q) { syncOthers(q); limitMax(q); });
   }
   var saveT;
-  form.addEventListener('input', function () { clearTimeout(saveT); saveT = setTimeout(save, 400); });
+  var started = false;
+  form.addEventListener('input', function () { if (!started) { started = true; track('apply_start'); } clearTimeout(saveT); saveT = setTimeout(save, 400); });
   form.addEventListener('change', function () { clearTimeout(saveT); saveT = setTimeout(save, 100); });
 
   function finish(sent) {
@@ -323,6 +348,7 @@ if (form) (function () {
     $('.ftabs', form).hidden = true; $('#actions').hidden = true;
     $('#previewnote').hidden = sent;
     var d = $('#done'); d.hidden = false;
+    if (sent) track('apply_submit', { event_slug: (form.elements.event_interest && form.elements.event_interest.value) || 'any' });
     store.del(SAVE);
     form.scrollIntoView({ block: 'start' }); d.focus({ preventScroll: true });
   }
@@ -352,7 +378,7 @@ if (pform) {
     if (!CONFIG.endpoint) { pform.hidden = true; $('#pdone').hidden = false; $('#ppreview').hidden = false; return; }
     btn.disabled = true; btn.textContent = M('sending');
     collect(pform).then(function (data) { data.form_type = 'partner'; return send(data); })
-      .then(function () { pform.hidden = true; $('#pdone').hidden = false; })
+      .then(function () { pform.hidden = true; $('#pdone').hidden = false; track('partner_submit'); })
       .catch(function () { msg.textContent = M('failed'); btn.disabled = false; btn.textContent = M('send'); });
   });
 }
@@ -402,4 +428,21 @@ setLang(saved || ((navigator.language || '').toLowerCase().indexOf('zh') === 0 ?
       n.parentNode.insertBefore(span, n.nextSibling);
     });
   } catch (e) { /* cosmetic only */ }
+})();
+
+/* ---------------- floating apply bar on phones ---------------- */
+(function () {
+  var bar = document.querySelector('.mbar'); if (!bar) return;
+  var stop = false, past = false;
+  function upd() { bar.classList.toggle('show', past && !stop); }
+  function onScroll() { past = window.scrollY > window.innerHeight * 0.7; upd(); }
+  window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  if ('IntersectionObserver' in window) {
+    var seen = new Set();
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) seen.add(e.target); else seen.delete(e.target); });
+      stop = seen.size > 0; upd();
+    });
+    document.querySelectorAll('.cta, footer, .nav.open').forEach(function (el) { io.observe(el); });
+  }
 })();
