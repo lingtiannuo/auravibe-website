@@ -32,6 +32,7 @@ document.addEventListener('click', function (e) {
   if (h.indexOf('apply.html') === 0) track('apply_click', { link_location: spot, event_slug: (h.split('event=')[1] || '') });
   else if (h.indexOf('xiaohongshu.com') > -1) track('social_click', { network: 'rednote', link_location: spot });
   else if (h.indexOf('instagram.com') > -1) track('social_click', { network: 'instagram', link_location: spot });
+  else if (h.indexOf('tiktok.com') > -1) track('social_click', { network: 'tiktok', link_location: spot });
   else if (h.indexOf('mailto:') === 0) track('email_click', { link_location: spot });
 }, true);
 
