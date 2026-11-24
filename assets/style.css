@@ -72,7 +72,7 @@ img{max-width:100%}
 .hero>.photo-frame::after{display:block;background:linear-gradient(to bottom,rgba(10,10,13,.04) 12%,rgba(10,10,13,.7) 62%,rgba(10,10,13,.98) 100%)}
 .hero .copy{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:32px;align-items:end;padding:clamp(24px,4vw,56px)}
 .hero h1{font-size:clamp(64px,9.6vw,152px)}
-:root[data-lang=zh] .hero h1{font-size:clamp(46px,6.4vw,98px)}
+:root[data-lang=zh] .hero h1{font-size:clamp(40px,5.3vw,82px)}
 .hero .pitch{display:flex;flex-direction:column;gap:18px}
 .hero .pitch p{color:var(--soft);font-size:17px;max-width:30em}
 .row{display:flex;flex-wrap:wrap;gap:12px}
@@ -503,7 +503,7 @@ footer a.social .ico{width:20px;height:20px;flex:none;border-radius:6px}
 .nw{white-space:nowrap}
 p,li,dd,blockquote,.lead,h3,h4{text-wrap:pretty}
 .sh p,.lead,.phero .lead{text-wrap:balance}
-@media(max-width:420px){:root[data-lang=zh] .hero h1{font-size:min(46px,calc((100vw - 84px)/6.2))}}
+@media(max-width:420px){:root[data-lang=zh] .hero h1{font-size:min(40px,calc((100vw - 84px)/8.3))}}
 @media(max-width:700px){.ftabs{display:flex}.ftabs li{flex:1 1 0;min-width:0}.ftabs li.on{flex:0 0 auto;padding-inline:12px;white-space:nowrap}}
 
 /* ===== mobile pass, Nov 2026 ===== */
