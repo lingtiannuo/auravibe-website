@@ -456,3 +456,120 @@ setLang(saved || ((navigator.language || '').toLowerCase().indexOf('zh') === 0 ?
     document.querySelectorAll('.cta, footer, .nav.open').forEach(function (el) { io.observe(el); });
   }
 })();
+
+/* ---------------- motion ----------------
+   Entrance reveals, parallax, magnetic buttons, header
+   hide/show, reading progress and smooth FAQ. Everything is skipped when
+   the visitor asks for reduced motion. */
+(function () {
+  var root = document.documentElement;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fine = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  window.__avMotion = true;
+  if (reduce) { root.classList.remove('js-motion'); return; }
+
+  /* reading progress + header hide/show */
+  var bar = document.createElement('div'); bar.className = 'progress-bar'; bar.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(bar);
+  var nav = document.querySelector('.nav'), lastY = window.scrollY, ticking = false;
+  function onScroll() {
+    var y = window.scrollY, max = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, y / max) : 0) + ')';
+    if (nav && !nav.classList.contains('open')) {
+      if (y > lastY + 6 && y > 160) nav.classList.add('hide');
+      else if (y < lastY - 6 || y < 160) nav.classList.remove('hide');
+    }
+    lastY = y;
+    parallax();
+    ticking = false;
+  }
+  window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+  document.addEventListener('focusin', function (e) { if (nav && nav.contains(e.target)) nav.classList.remove('hide'); });
+
+  /* parallax: hero photo and the photo strip */
+  var heroImg = document.querySelector('.hero > .ph .photo-img');
+  var strip = Array.prototype.slice.call(document.querySelectorAll('.strip .ph'));
+  strip.forEach(function (ph) { var im = ph.querySelector('.photo-img'); if (im) im.style.scale = '1.14'; });
+  function parallax() {
+    var vh = window.innerHeight;
+    if (heroImg) {
+      var r = heroImg.parentElement.getBoundingClientRect();
+      if (r.bottom > 0) heroImg.style.translate = '0 ' + Math.min(48, Math.max(0, -r.top * 0.12)).toFixed(1) + 'px';
+    }
+    strip.forEach(function (ph, i) {
+      var r = ph.getBoundingClientRect(); if (r.bottom < 0 || r.top > vh) return;
+      var p = (r.top + r.height / 2 - vh / 2) / vh;           /* -1 … 1 across the screen */
+      var im = ph.querySelector('.photo-img'); if (!im) return;
+      im.style.translate = '0 ' + (p * (i % 2 ? -26 : 26)).toFixed(1) + 'px';
+    });
+  }
+  onScroll();
+
+  /* entrance reveals */
+  if (!('IntersectionObserver' in window)) { root.classList.remove('js-motion'); return; }
+  var SEL = [
+    'main .sh', '.mani > *', '.steps4 > li', '.evgrid > .ev', '.formats > div',
+    '.room > div', '.rules > *', '.rules ol > li', '.faq .qs > details', '.faqg', '.strip > .ph', '.band', '.cta > *',
+    '.values > div', '.team > div', '.offer > div', '.reach > li', '.story .body > *', '.story > h2', '.article > section',
+    '.evhero > *', '.facts2 > *', '.sched > li', '.know > div', '.evcta .band', '.cols2 > *', '.grid3 > *'
+  ].join(',');
+  var all = Array.prototype.slice.call(document.querySelectorAll(SEL));
+  var els = all.filter(function (el) {
+    if (el.closest('.hero') || el.closest('.formcard') || el.closest('.mnav')) return false;
+    if (/(auto|scroll)/.test(getComputedStyle(el.parentElement).overflowX)) return false;   /* swipe rails on phones */
+    for (var p = el.parentElement; p; p = p.parentElement) if (all.indexOf(p) > -1) return false;  /* no nested reveals */
+    var r = el.getBoundingClientRect();
+    return r.top > window.innerHeight * 0.92 || r.bottom < 0;   /* already on screen at load: leave it alone */
+  });
+  els.forEach(function (el) { el.classList.add('rv'); });
+  els.forEach(function (el) {
+    var sibs = Array.prototype.filter.call(el.parentElement.children, function (c) { return c.classList.contains('rv'); });
+    el.style.setProperty('--d', (Math.min(sibs.indexOf(el), 6) * 0.08).toFixed(2) + 's');
+  });
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      var el = e.target; el.classList.add('rv-in'); io.unobserve(el);
+      /* hand the element back to its own hover transitions once it has landed */
+      setTimeout(function () { el.classList.remove('rv', 'rv-in'); el.style.removeProperty('--d'); }, 1000 + parseFloat(el.style.getPropertyValue('--d') || 0) * 1000);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+  els.forEach(function (el) { io.observe(el); });
+
+  /* magnetic primary buttons (mouse only) */
+  if (fine) {
+    document.querySelectorAll('.hero .btn, .cta .btn, .evcta .btn, .band .btn, .phero .btn').forEach(function (b) {
+      b.addEventListener('pointermove', function (e) {
+        var r = b.getBoundingClientRect();
+        b.style.translate = ((e.clientX - r.left - r.width / 2) * 0.18).toFixed(1) + 'px ' + ((e.clientY - r.top - r.height / 2) * 0.3).toFixed(1) + 'px';
+      });
+      b.addEventListener('pointerleave', function () { b.style.translate = ''; });
+    });
+  }
+
+  /* smooth FAQ open / close */
+  document.querySelectorAll('details').forEach(function (d) {
+    var s = d.querySelector('summary'); if (!s || !d.animate) return;
+    var busy = false;
+    s.addEventListener('click', function (e) {
+      e.preventDefault(); if (busy) return; busy = true;
+      var start = d.offsetHeight;
+      if (d.open) {
+        var end = s.offsetHeight;
+        d.style.overflow = 'hidden';
+        d.classList.add('closing');
+        d.animate({ height: [start + 'px', end + 'px'] }, { duration: 320, easing: 'cubic-bezier(.22,1,.36,1)' }).onfinish = function () {
+          d.open = false; d.style.overflow = ''; d.classList.remove('closing'); busy = false;
+        };
+      } else {
+        d.open = true;
+        var full = d.offsetHeight;
+        d.style.overflow = 'hidden';
+        d.animate({ height: [start + 'px', full + 'px'] }, { duration: 380, easing: 'cubic-bezier(.22,1,.36,1)' }).onfinish = function () {
+          d.style.overflow = ''; busy = false;
+        };
+        Array.prototype.forEach.call(d.children, function (c) { if (c !== s) c.animate({ opacity: [0, 1], transform: ['translateY(-6px)', 'none'] }, { duration: 380, easing: 'ease-out' }); });
+      }
+    });
+  });
+})();

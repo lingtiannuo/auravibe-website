@@ -591,3 +591,107 @@ p,li,dd,blockquote,.lead,h3,h4{text-wrap:pretty}
 }
 .panel .ptitle{font-size:clamp(32px,3.4vw,52px)}
 :root[data-lang=zh] .panel .ptitle{font-size:clamp(24px,2.3vw,34px)}
+
+/* ===== type scale v4: one size per level ===== */
+/* card titles: poster cards keep Anton in English */
+.ev h3,.formats h3,.offer h3{font-size:26px;line-height:1}
+:root[data-lang=zh] .ev h3,:root[data-lang=zh] .formats h3,:root[data-lang=zh] .offer h3{font-size:20px;font-weight:700;line-height:1.35}
+/* card titles: text cards */
+.room h3,.values h3,.team h3,.steps4 h3,.know h3{font-size:20px;font-weight:700;line-height:1.35}
+.article h2{font-size:22px;line-height:1.35}
+/* numbers */
+.steps4 b{font-size:40px}
+.room>div>b,.values>div>b,.rules ol>li>b,.sched>li>b,.article>section>b,.reach>li>b{font-size:22px;line-height:1.2}
+/* text */
+.reach>li{font-size:20px;line-height:1.45}
+.story .big{font-size:clamp(20px,1.9vw,26px);line-height:1.5}
+summary{font-size:17px}
+.cta .eyebrow{font-size:13px;letter-spacing:.12em}
+.ev .body p{font-size:15px;line-height:1.6}
+@media(max-width:560px){
+  .ev h3,.formats h3,.offer h3{font-size:23px}
+  :root[data-lang=zh] .ev h3,:root[data-lang=zh] .formats h3,:root[data-lang=zh] .offer h3{font-size:18px}
+  .room h3,.values h3,.team h3,.steps4 h3,.know h3{font-size:18px}
+  .article h2{font-size:20px}
+  .steps4 b{font-size:32px}
+  .room>div>b,.values>div>b,.rules ol>li>b,.sched>li>b,.article>section>b,.reach>li>b{font-size:20px}
+  .reach>li{font-size:18px}
+  summary{font-size:16px}
+  .sh p{font-size:16px}
+}
+
+/* ===== motion v1 ===== */
+@view-transition{navigation:auto}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.32s}
+:root{--ease:cubic-bezier(.22,1,.36,1)}
+/* reading progress */
+.progress-bar{position:fixed;left:0;top:0;height:2px;width:100%;background:var(--ink);opacity:.75;transform-origin:0 50%;transform:scaleX(0);z-index:60;pointer-events:none}
+/* header hides on the way down, returns on the way up */
+.nav{transition:transform .4s var(--ease)}
+.nav.hide{transform:translateY(-100%)}
+/* buttons */
+.btn{transition:background .2s,color .2s,border-color .2s,transform .3s var(--ease),box-shadow .3s var(--ease),translate .35s var(--ease)}
+.btn:active{transform:scale(.96);transition-duration:.08s}
+@media(hover:hover){
+  .btn:hover{transform:translateY(-2px)}
+  .btn:hover:active{transform:translateY(0) scale(.96)}
+}
+/* link underlines */
+.nav nav a{position:relative}
+.nav nav a::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:1.5px;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .35s var(--ease)}
+.nav nav a:hover::after,.nav nav a[aria-current=page]::after,.nav nav a.on::after{transform:scaleX(1);transform-origin:left}
+.arrow{border-bottom:0;padding-bottom:3px;background:linear-gradient(currentColor,currentColor) 0 100%/100% 1.5px no-repeat}
+@keyframes uline{0%{background-size:100% 1.5px;background-position:100% 100%}45%{background-size:0 1.5px;background-position:100% 100%}46%{background-position:0 100%}100%{background-size:100% 1.5px;background-position:0 100%}}
+@media(hover:hover){.arrow:hover{animation:uline .7s var(--ease)}}
+footer a:not(.btn){transition:color .2s}
+/* cards */
+.ev{transition:border-color .25s,transform .45s var(--ease)}
+.ev .photo-img,.strip .photo-img{transition:transform .9s var(--ease)}
+.room>div,.values>div,.offer>div,.formats>div,.know>div{transition:transform .45s var(--ease),border-color .3s,background-color .3s}
+@media(hover:hover){
+  .ev:hover{transform:translateY(-6px)}
+  .ev:hover .photo-img,.strip .ph:hover .photo-img{transform:scale(1.06)}
+  .room>div:hover,.values>div:hover,.offer>div:hover,.know>div:hover{transform:translateY(-4px);border-color:rgba(245,242,238,.4)}
+  .formats>div:hover{background-color:var(--panel)}
+}
+/* FAQ: plus turns into a cross */
+summary::after{transition:transform .35s var(--ease),color .2s}
+details[open] summary::after{content:"+";transform:rotate(45deg);color:var(--ink)}
+@media(hover:hover){summary:hover::after{color:var(--ink)}}
+/* marquee pauses under the cursor */
+.mq:hover .tr{animation-play-state:paused}
+
+/* --- entrance animations (only when motion is allowed; js adds .js-motion) --- */
+@keyframes rise{from{opacity:0;transform:translateY(.55em)}to{opacity:1;transform:none}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes heroIn{from{scale:1.16}to{scale:1.08}}
+.js-motion .hero>.ph .photo-img{scale:1.08;animation:heroIn 1.8s var(--ease) both}
+.js-motion .hero h1 .nb,.js-motion .hero h1 [data-t=en]{display:inline-block;animation:rise 1s var(--ease) both}
+.js-motion .hero h1 [data-t=zh]{display:inline}
+.js-motion .hero h1 .nb:nth-of-type(1){animation-delay:.15s}
+.js-motion .hero h1 .nb:nth-of-type(2){animation-delay:.27s}
+.js-motion .hero h1 .nb:nth-of-type(3){animation-delay:.39s}
+.js-motion .hero h1 .nb:nth-of-type(4){animation-delay:.51s}
+.js-motion .hero h1 [data-t=en]{animation-delay:.15s}
+.js-motion .hero .pitch>*{animation:fadeUp .9s var(--ease) both}
+.js-motion .hero .pitch>*:nth-child(1){animation-delay:.55s}
+.js-motion .hero .pitch>*:nth-child(2){animation-delay:.67s}
+.js-motion .hero .pitch>*:nth-child(3){animation-delay:.79s}
+.js-motion .rv{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease);transition-delay:var(--d,0s)}
+.js-motion .rv.rv-in{opacity:1;transform:none}
+.js-motion .rv.rv-in:hover{transition-delay:0s}
+.strip .photo-img,.hero>.ph .photo-img{will-change:transform}
+@media(prefers-reduced-motion:reduce){
+  .nav,.btn,.ev,.ev .photo-img,.strip .photo-img,.room>div,.values>div,.offer>div,.know>div,summary::after{transition:none!important}
+  .btn:hover,.ev:hover,.room>div:hover,.values>div:hover,.offer>div:hover,.know>div:hover{transform:none!important}
+  .ev:hover .photo-img,.strip .ph:hover .photo-img{transform:none!important}
+  .arrow:hover{animation:none}
+  .progress-bar{display:none}
+}
+details.closing summary::after{transform:rotate(0)}
+.js-motion .phero>*,.js-motion .page-hd>*{animation:fadeUp .9s var(--ease) both}
+.js-motion .phero>*:nth-child(2),.js-motion .page-hd>*:nth-child(2){animation-delay:.1s}
+.js-motion .phero>*:nth-child(3),.js-motion .page-hd>*:nth-child(3){animation-delay:.2s}
+.js-motion .phero>*:nth-child(n+4),.js-motion .page-hd>*:nth-child(n+4){animation-delay:.3s}
+:root[data-lang=zh] .sh p,:root[data-lang=zh] .lead,:root[data-lang=zh] .phero .lead{text-wrap:pretty}
+@media(max-width:860px){.rules .in{row-gap:44px}}
