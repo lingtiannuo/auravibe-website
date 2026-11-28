@@ -511,7 +511,7 @@ setLang(saved || ((navigator.language || '').toLowerCase().indexOf('zh') === 0 ?
     'main .sh', '.mani > *', '.steps4 > li', '.evgrid > .ev', '.formats > div',
     '.room > div', '.rules > *', '.rules ol > li', '.faq .qs > details', '.faqg', '.strip > .ph', '.band', '.cta > *',
     '.values > div', '.team > div', '.offer > div', '.reach > li', '.story .body > *', '.story > h2', '.article > section',
-    '.evhero > *', '.facts2 > *', '.sched > li', '.know > div', '.evcta .band', '.cols2 > *', '.grid3 > *'
+    '.evhero > *', '.facts2 > *', '.sched > li', '.know > div', '.evcta .band', '.cols2 > *', '.grid3 > *', '.fd-ph', '.fd-tx > :not(.ltr)', '.ltr > p'
   ].join(',');
   var all = Array.prototype.slice.call(document.querySelectorAll(SEL));
   var els = all.filter(function (el) {
